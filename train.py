@@ -3,11 +3,12 @@ import torch.nn as nn
 import torch.nn.functional as functional
 import torch.optim as optim
 from matplotlib import pyplot as plt
+import json
 
 # import torchvision.utils as vutils
 import dataset.datasets as dataset
 from model import discriminator, generator
-#from comet_ml import experiment
+# from comet_ml import experiment
 
 
 def summarize_performance(epoch, gen, disc, latent_dim, n=100):
@@ -135,7 +136,7 @@ def main():
 
             ## Train with all-fake batch
             # Generate batch of latent vectors
-            noise = torch.randn(10, 5, device=device)
+            noise = torch.randn(5, device=device)
             # Generate fake image batch with G
             fake = netG(noise)
             label.fill_(fake_label)
@@ -189,13 +190,18 @@ def main():
 
         # compute the MLSLoss for each batch of the dataloader
 
-
     # Save the model
-    torch.save(netG.state_dict(), 'saved/models/modelG3.pth')
-    torch.save(netD.state_dict(), 'saved/models/modelD3.pth')
+    torch.save(netG.state_dict(), 'saved/models/modelG4.pth')
+    torch.save(netD.state_dict(), 'saved/models/modelD4.pth')
 
     # convert the list of mselosses
     mse_list = [mse_list[i].item() for i in range(len(mse_list))]
+
+    # save the losses
+    with open("G_losses4.json", 'w') as f:
+        json.dump(G_losses, f, indent=2)
+    with open("D_losses4.json", 'w') as f:
+        json.dump(D_losses, f, indent=2)
 
     # Plot the loss
     plt.figure()

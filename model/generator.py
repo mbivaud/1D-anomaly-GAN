@@ -9,8 +9,8 @@ class Generator(nn.Module):
         # Find value of latent_dim
         latent_dim = 5
         self.ngpu = ngpu
-        self.fc1 = nn.Linear(latent_dim, 10)
-        self.fc2 = nn.Linear(10, 64)
+        self.fc1 = nn.Linear(latent_dim, 16)
+        self.fc2 = nn.Linear(16, 64)
         self.fc3 = nn.Linear(64, 91)
         # output should be of form (latent_dim, 91)
 

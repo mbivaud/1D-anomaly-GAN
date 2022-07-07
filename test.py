@@ -60,8 +60,8 @@ def test(dataset_to_test):
     netG = generator.Generator(ngpu)
     netD = discriminator.Discriminator(ngpu)
     # load the weights of the trained model
-    netG.load_state_dict(torch.load('saved/models/modelG3.pth'))
-    netD.load_state_dict(torch.load('saved/models/modelD3.pth'))
+    netG.load_state_dict(torch.load('saved/models/modelG4.pth'))
+    netD.load_state_dict(torch.load('saved/models/modelD4.pth'))
     # prepare model for testing
     netG.eval()
     netD.eval()
@@ -121,7 +121,7 @@ def main():
                       columns=['Healthy', 'SCZ', 'BD', 'ADHD'])
     # Plot the loss
     plt.figure()
-    plt.boxplot([df.iloc[:, 0],df.iloc[:, 1],df.iloc[:, 2],df.iloc[:, 3]])
+    plt.boxplot([df.iloc[:, 0], df.iloc[:, 1], df.iloc[:, 2], df.iloc[:, 3]])
     plt.show()
 
 
