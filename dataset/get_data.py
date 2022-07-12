@@ -155,9 +155,10 @@ def reshape_all(all_vector, lower=True):
 
 data_information = pd.read_csv("C:\\Users\\morga\\Documents\\ETS\\Projet\\data\\data_id_14FBN.csv", sep=";")
 timeseries = get_timeseries("C:\\Users\\morga\\Documents\\ETS\\Projet\\data\\dr_fbn_timeseries")
-all_correlation_matrices, all_vectors = get_matrix(timeseries, z_score=True)
+all_correlation_matrices, all_vectors = get_matrix(timeseries, z_score=False)
 all_data_timeseries = pd.concat([data_information, pd.DataFrame(all_vectors)], axis=1)
 vectors_to_lower_matrix = reshape_all(all_vectors)
+all_data_timeseries.to_csv("all_data_timeseries.csv")
 
 if get_images:
     plot_subject(all_vectors[0])

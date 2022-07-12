@@ -4,11 +4,16 @@ import torch.nn.functional as functional
 import torch.optim as optim
 from matplotlib import pyplot as plt
 import json
-
-# import torchvision.utils as vutils
+import numpy as np
 import dataset.datasets as dataset
 from model import discriminator, generator
-# from comet_ml import experiment
+
+# fix random seeds for reproducibility
+SEED = 123
+torch.manual_seed(SEED)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+np.random.seed(SEED)
 
 
 def summarize_performance(epoch, gen, disc, latent_dim, n=100):
@@ -42,8 +47,8 @@ def prepare_device(n_gpu_use):
     return device, list_ids
 
 
-def main():
-    print("coucou")
+def train():
+    print("Starting training")
     # all the parameters
     n_batch = 128
     n_epochs = 100
@@ -63,14 +68,14 @@ def main():
     # Handle multi-gpu if desired
     if (device.type == 'cuda') and (ngpu > 1):
         netG = nn.DataParallel(netG, list(range(ngpu)))
-    print(netG)
+    #print(netG)
 
     netD = discriminator.Discriminator(ngpu).to(device)
     # Handle multi-gpu if desired
     if (device.type == 'cuda') and (ngpu > 1):
         netD = nn.DataParallel(netD, list(range(ngpu)))
     # Print the model
-    print(netD)
+    #print(netD)
 
     # Initialize MSELoss function
     criterion = nn.MSELoss()
@@ -190,26 +195,7 @@ def main():
 
         # compute the MLSLoss for each batch of the dataloader
 
-    # Save the model
-    torch.save(netG.state_dict(), 'saved/models/modelG4.pth')
-    torch.save(netD.state_dict(), 'saved/models/modelD4.pth')
-
     # convert the list of mselosses
     mse_list = [mse_list[i].item() for i in range(len(mse_list))]
 
-    # save the losses
-    with open("G_losses4.json", 'w') as f:
-        json.dump(G_losses, f, indent=2)
-    with open("D_losses4.json", 'w') as f:
-        json.dump(D_losses, f, indent=2)
-
-    # Plot the loss
-    plt.figure()
-    plt.boxplot(mse_list)
-    plt.show()
-
-
-if __name__ == '__main__':
-    fNet_size = 91
-    main()
-
+    return mse_list, G_losses, D_losses, netG, netD

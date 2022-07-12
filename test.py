@@ -1,10 +1,8 @@
 import numpy as np
 import pandas as pd
-from sklearn.metrics import mean_squared_error
 import torch
 from matplotlib import pyplot as plt
 from torch import optim
-from torch.autograd import Variable
 import torch.nn.functional as functional
 import tqdm
 
@@ -12,10 +10,15 @@ import dataset.data_division
 import dataset.get_data as get_data
 import model.generator as generator
 import model.discriminator as discriminator
-import dataset.data_division as data_division
 import dataset.datasets as datasets
-import statistics
-import seaborn
+
+
+# fix random seeds for reproducibility
+SEED = 123
+torch.manual_seed(SEED)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+np.random.seed(SEED)
 
 
 def my_mean_squared_error(list_diff):
@@ -60,8 +63,8 @@ def test(dataset_to_test):
     netG = generator.Generator(ngpu)
     netD = discriminator.Discriminator(ngpu)
     # load the weights of the trained model
-    netG.load_state_dict(torch.load('saved/models/modelG4.pth'))
-    netD.load_state_dict(torch.load('saved/models/modelD4.pth'))
+    netG.load_state_dict(torch.load('saved/models/modelG6.pth'))
+    netD.load_state_dict(torch.load('saved/models/modelD6.pth'))
     # prepare model for testing
     netG.eval()
     netD.eval()
@@ -99,31 +102,3 @@ def test(dataset_to_test):
         list_diff.append(diff_data)
 
     return list_diff
-
-
-def main():
-    dataset_healthy = dataset.data_division.get_testing_healthy_data(get_data.all_data_timeseries)
-    result0 = test(dataset_healthy)
-    new_result0 = []
-    for i in range(len(result0)):
-        new_result0.append(result0[i].item())
-    print(result0)
-    dataset_scz = dataset.data_division.get_testing_scz_data(get_data.all_data_timeseries)
-    result1 = test(dataset_scz)
-    result1 = [result1[i].item() for i in range(len(result1))]
-    dataset_bd = dataset.data_division.get_bd_data(get_data.all_data_timeseries)
-    result2 = test(dataset_bd)
-    result2 = [result2[i].item() for i in range(len(result2))]
-    dataset_adhd = dataset.data_division.get_adhd_data(get_data.all_data_timeseries)
-    result3 = test(dataset_adhd)
-    result3 = [result3[i].item() for i in range(len(result3))]
-    df = pd.DataFrame(list(zip(new_result0, result1, result2, result3)),
-                      columns=['Healthy', 'SCZ', 'BD', 'ADHD'])
-    # Plot the loss
-    plt.figure()
-    plt.boxplot([df.iloc[:, 0], df.iloc[:, 1], df.iloc[:, 2], df.iloc[:, 3]])
-    plt.show()
-
-
-if __name__ == '__main__':
-    main()
