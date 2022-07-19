@@ -7,6 +7,10 @@ import json
 import numpy as np
 import dataset.datasets as dataset
 from model import discriminator, generator
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LinearRegression
 
 # fix random seeds for reproducibility
 SEED = 123
