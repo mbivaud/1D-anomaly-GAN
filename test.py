@@ -50,21 +50,20 @@ def anomaly_score(x, z, disc, gen, Lambda=0.1):
     return total_loss
 
 
-def test(dataset_to_test):
+def test(dataloader, path_to_g, path_to_d, batch_size, latent_dim):
     print("Starting test")
     # parameters
     ngpu = 1
-    n_epochs = 100
+    n_epochs = 1
     lr = 0.0002
     beta1 = 0.5
-    # setup dataset and dataloader
-    dataloader = datasets.FNetTestDataset(dataset_to_test)
+
     # build model architecture
     netG = generator.Generator(ngpu)
     netD = discriminator.Discriminator(ngpu)
     # load the weights of the trained model
-    netG.load_state_dict(torch.load('saved/models/modelG6.pth'))
-    netD.load_state_dict(torch.load('saved/models/modelD6.pth'))
+    netG.load_state_dict(torch.load(path_to_g))
+    netD.load_state_dict(torch.load(path_to_d))
     # prepare model for testing
     netG.eval()
     netD.eval()
@@ -76,17 +75,20 @@ def test(dataset_to_test):
     # Lists to keep track of progress
     anom_losses = []
     iters = 0
-    # start with random noise
-    z = torch.randn(91, 5, device=device)
-    z = z.to(device)
-    # input optimizer
-    z_optim = optim.Adam([z], lr)
+
     list_diff = []
 
     for i, tested_data in enumerate(tqdm.tqdm(dataloader), 0):
-        tested_data = torch.from_numpy(tested_data).float().to(device)
+        # start with random noise
+        z = torch.randn(tested_data.size(dim=0), latent_dim, device=device)
+        z = z.to(device)
+        # input optimizer
+        z_optim = optim.SGD([z], lr)
+        tested_data = tested_data.float().to(device)
         for epoch in range(n_epochs):
             an_loss = anomaly_score(tested_data, z, netD, netG, Lambda=0.01)
+            an_loss = an_loss.clone().detach().requires_grad_(True)
+            #print(an_loss)
             an_loss.backward()
             z_optim.step()
 
@@ -99,6 +101,6 @@ def test(dataset_to_test):
         #print(tested_data)
         #print(reconstructed_data)
         diff_data = functional.mse_loss(reconstructed_data, tested_data)
-        list_diff.append(diff_data)
+        list_diff.append(diff_data.item())
 
     return list_diff

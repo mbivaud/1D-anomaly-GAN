@@ -7,6 +7,7 @@ class Discriminator(nn.Module):
     def __init__(self, ngpu):
         super(Discriminator, self).__init__()
         n_input = 91
+        batch_size = 10
         self.ngpu = ngpu
         self.fc1 = nn.Linear(n_input, 64)
         self.fc2 = nn.Linear(64, 32)

@@ -7,10 +7,10 @@ class Generator(nn.Module):
     def __init__(self, ngpu):
         super(Generator, self).__init__()
         # Find value of latent_dim
-        latent_dim = 5
+        latent_dim = 10
         self.ngpu = ngpu
-        self.fc1 = nn.Linear(latent_dim, 16)
-        self.fc2 = nn.Linear(16, 64)
+        self.fc1 = nn.Linear(latent_dim, 32)
+        self.fc2 = nn.Linear(32, 64)
         self.fc3 = nn.Linear(64, 91)
         # output should be of form (latent_dim, 91)
 

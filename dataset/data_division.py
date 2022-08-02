@@ -49,7 +49,8 @@ def get_healthy(dataset: pd.DataFrame):
     :return: a list of vectors from healthy patients
     """
     healthy_vectors = dataset.loc[dataset['Disease'] == 0]
-    return healthy_vectors
+    healthy_vectors = healthy_vectors.iloc[:, 7:98]
+    return healthy_vectors.to_numpy()
 
 
 def get_training_data(dataset: pd.DataFrame):
@@ -100,4 +101,3 @@ def get_adhd_data(dataset: pd.DataFrame):
     adhd_data = dataset.loc[dataset['Disease'] == 3]
     adhd_data = adhd_data.iloc[:, 7:98]
     return adhd_data.to_numpy()
-
